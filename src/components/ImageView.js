@@ -8,7 +8,7 @@ export class ImageView {
     // img url
     this.state = initialState;
     this.$target = document.createElement("div");
-    this.$target.className = "ImageViewer";
+    this.$target.className = "Modal ImageViewer";
 
     $app.appendChild(this.$target);
 
