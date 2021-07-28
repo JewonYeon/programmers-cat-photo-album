@@ -14,7 +14,7 @@ export class App {
 
     this.breadcrumb = new Breadcrumb({
       $app,
-      initialState: this.state.depth,
+      initialState: [],
     });
 
     this.nodes = new Nodes({
@@ -32,7 +32,9 @@ export class App {
               ...this.state,
               depth: [...this.state.depth, node],
               nodes: nextNodes,
+              isRoot: false,
             });
+            console.log("경로 확인", this.state.depth);
           } else if (node.type === "FILE") {
             // FILE인 경우 처리
             this.setState({
@@ -42,6 +44,39 @@ export class App {
           }
         } catch (e) {
           // 에러 처리
+        }
+      },
+      onBackClick: async () => {
+        try {
+          // 이전 state를 복사하여 처리
+          const nextState = { ...this.state };
+
+          nextState.depth.pop();
+
+          const prevNodeId =
+            nextState.depth.length === 0
+              ? null
+              : nextState.depth[nextState.depth.length - 1].id;
+
+          // root로 온 경우이므로 root 처리
+          if (prevNodeId === null) {
+            const rootNodes = await api.root();
+            this.setState({
+              ...nextState,
+              isRoot: true,
+              nodes: rootNodes,
+            });
+          } else {
+            const prevNodes = await api.directory(prevNodeId);
+
+            this.setState({
+              ...nextState,
+              isRoot: false,
+              nodes: prevNodes,
+            });
+          }
+        } catch (e) {
+          // 에러처리
         }
       },
     });
@@ -57,6 +92,7 @@ export class App {
   // setState 함수 정의
   setState(nextState) {
     this.state = nextState;
+    this.breadcrumb.setState(this.state.depth);
     this.nodes.setState({
       isRoot: this.state.isRoot,
       nodes: this.state.nodes,
