@@ -2,6 +2,7 @@ import { Breadcrumb } from "./components/Breadcrumb.js";
 import { ImageView } from "./components/ImageView.js";
 import { Nodes } from "./components/Nodes.js";
 import { api } from "./api.js";
+import { Loading } from "./components/Loading.js";
 
 export class App {
   constructor($app) {
@@ -10,6 +11,7 @@ export class App {
       nodes: [],
       depth: [],
       selectedFilePath: null,
+      isLoading: false,
     };
 
     this.breadcrumb = new Breadcrumb({
@@ -86,6 +88,11 @@ export class App {
       initialState: this.state.selectedNodeImage,
     });
 
+    this.loading = new Loading({
+      $app,
+      initialState: this.state.isLoading,
+    });
+
     this.init();
   }
 
@@ -98,11 +105,16 @@ export class App {
       nodes: this.state.nodes,
     });
     this.imageView.setState(this.state.selectedFilePath);
+    this.loading.setState(this.state.isLoading);
   }
 
   // 초기화
   async init() {
     try {
+      this.setState({
+        ...this.state,
+        isLoading: true,
+      });
       const rootNodes = await api.root();
       this.setState({
         ...this.state,
@@ -111,6 +123,11 @@ export class App {
       });
     } catch (e) {
       // 에러 처리
+    } finally {
+      this.setState({
+        ...this.state,
+        isLoading: false,
+      });
     }
   }
 }
