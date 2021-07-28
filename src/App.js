@@ -26,6 +26,10 @@ export class App {
       // 이러면 Nodes 내에선 click 후 어떤 로직이 일어날지 알아야 할 필요가 없음
       onClick: async (node) => {
         try {
+          this.setState({
+            ...this.state,
+            isLoading: true,
+          });
           if (node.type === "DIRECTORY") {
             // DIRECTORY인 경우 처리
             // 여기에서 Breadcrumb 관련 처리를 하게 되면, Nodes에서는 Breadcrumb를 몰라도 됨
@@ -36,7 +40,6 @@ export class App {
               nodes: nextNodes,
               isRoot: false,
             });
-            console.log("경로 확인", this.state.depth);
           } else if (node.type === "FILE") {
             // FILE인 경우 처리
             this.setState({
@@ -46,6 +49,12 @@ export class App {
           }
         } catch (e) {
           // 에러 처리
+          throw new Error(e.message);
+        } finally {
+          this.setState({
+            ...this.state,
+            isLoading: false,
+          });
         }
       },
       onBackClick: async () => {
