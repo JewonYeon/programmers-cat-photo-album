@@ -9,6 +9,7 @@ export class App {
       isRoot: true,
       nodes: [],
       depth: [],
+      selectedFilePath: null,
     };
 
     this.nodes = new Nodes({
@@ -29,11 +30,20 @@ export class App {
             });
           } else if (node.type === "FILE") {
             // FILE인 경우 처리
+            this.setState({
+              ...this.state,
+              selectedFilePath: node.filePath,
+            });
           }
         } catch (e) {
           // 에러 처리
         }
       },
+    });
+
+    this.imageView = new ImageView({
+      $app,
+      initialState: this.state.selectedNodeImage,
     });
 
     this.init();
@@ -46,6 +56,7 @@ export class App {
       isRoot: this.state.isRoot,
       nodes: this.state.nodes,
     });
+    this.imageView.setState(this.state.selectedFilePath);
   }
 
   // 초기화
