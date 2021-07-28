@@ -21,9 +21,9 @@ export class ImageView {
   }
 
   render() {
-    this.$target.innerHTML = `<div class="content"><img src=${IMAGE_PATH_PREFIX}${
-      this.state || ""
-    }></div>`;
+    this.$target.innerHTML = `<div class="content">${
+      this.state ? `<img src="${IMAGE_PATH_PREFIX}${this.state}">` : ""
+    }</div>`;
 
     this.$target.style.display = this.state ? "block" : "none";
   }
