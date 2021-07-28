@@ -1,6 +1,6 @@
-import { Breadcrumb } from "./components/Breadcrumb";
-import { ImageView } from "./components/ImageView";
-import { Nodes } from "./components/Nodes";
+import { Breadcrumb } from "./components/Breadcrumb.js";
+import { ImageView } from "./components/ImageView.js";
+import { Nodes } from "./components/Nodes.js";
 
 export class App {
   constructor($app) {
