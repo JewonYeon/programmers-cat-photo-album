@@ -12,6 +12,11 @@ export class App {
       selectedFilePath: null,
     };
 
+    this.breadcrumb = new Breadcrumb({
+      $app,
+      initialState: this.state.depth,
+    });
+
     this.nodes = new Nodes({
       $app,
       initialState: [],
