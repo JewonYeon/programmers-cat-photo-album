@@ -8,6 +8,8 @@ export class Breadcrumb {
     this.$target = document.createElement("nav");
     this.$target.className = "Breadcrumb";
     $app.appendChild(this.$target);
+
+    this.render();
   }
 
   setState(nextState) {
