@@ -50,16 +50,26 @@ export class Nodes {
     }
 
     // 렌더링 된 이후에 클릭 가능한 모든 요소에 click 이벤트 걸기
-    this.$target.querySelectorAll(".Node").forEach(($node) => {
-      $node.addEventListener("click", (e) => {
-        // dataset을 통해 data-로 시작하는 attribute를 꺼내올 수 있음
-        const { nodeId } = e.target.dataset;
-        const selectNode = this.state.nodes.find((node) => node.id === nodeId);
+    this.$target.addEventListener("click", (e) => {
+      // 이벤트 위임 구현
+      // closest를 통해 현재 클릭한 요소와 제일 인접한 요소를 가져올 수 있음
+      const $node = e.target.closest(".Node");
 
-        if (selectNode) {
-          this.onClick(selectNode);
+      if ($node) {
+        const { nodeId } = $node.dataset;
+
+        if (!nodeId) {
+          return;
         }
-      });
+
+        const selectedNode = this.state.nodes.find(
+          (node) => node.id === nodeId
+        );
+
+        if (selectedNode) {
+          this.onClick(selectedNode);
+        }
+      }
     });
   }
 }
