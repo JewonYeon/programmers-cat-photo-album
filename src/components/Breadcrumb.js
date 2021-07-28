@@ -13,7 +13,7 @@ export class Breadcrumb {
   }
 
   setState(nextState) {
-    this.initialState = nextState;
+    this.state = nextState;
     this.render();
   }
 
