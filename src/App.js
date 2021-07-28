@@ -1,6 +1,7 @@
 import { Breadcrumb } from "./components/Breadcrumb.js";
 import { ImageView } from "./components/ImageView.js";
 import { Nodes } from "./components/Nodes.js";
+import { api } from "./api.js";
 
 export class App {
   constructor($app) {
@@ -24,5 +25,30 @@ export class App {
         }
       },
     });
+
+    this.init();
+  }
+
+  // setState 함수 정의
+  setState(nextState) {
+    this.state = nextState;
+    this.nodes.setState({
+      isRoot: this.state.isRoot,
+      nodes: this.state.nodes,
+    });
+  }
+
+  // 초기화
+  async init() {
+    try {
+      const rootNodes = await api.root();
+      this.setState({
+        ...this.state,
+        isRoot: true,
+        nodes: rootNodes,
+      });
+    } catch (e) {
+      // 에러 처리
+    }
   }
 }
