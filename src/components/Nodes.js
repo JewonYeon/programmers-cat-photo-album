@@ -15,6 +15,7 @@ export class Nodes {
     this.onClick = onClick;
 
     this.render();
+    this.setEvent();
   }
 
   // state를 받아서 현재 컴포넌트의 state를 변경하고 다시 렌더링하는 메서드
@@ -48,7 +49,9 @@ export class Nodes {
         ? `<div class="Node"><img src="/assets/prev.png"></div>${nodeTemplate}`
         : nodeTemplate;
     }
+  }
 
+  setEvent() {
     // 렌더링 된 이후에 클릭 가능한 모든 요소에 click 이벤트 걸기
     this.$target.addEventListener("click", (e) => {
       // 이벤트 위임 구현
