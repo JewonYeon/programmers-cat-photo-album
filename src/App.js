@@ -109,7 +109,7 @@ export class App {
             this.setState({
               ...nextState,
               isRoot: false,
-              nodes: cache[prevNodes],
+              nodes: cache[prevNodeId],
             });
           }
         } catch (e) {
@@ -127,6 +127,18 @@ export class App {
     this.imageView = new ImageView({
       $app,
       initialState: this.state.selectedNodeImage,
+      onKeyDown: () => {
+        this.setState({
+          ...this.state,
+          selectedFilePath: null,
+        });
+      },
+      onClick: () => {
+        this.setState({
+          ...this.state,
+          selectedFilePath: null,
+        });
+      },
     });
 
     this.loading = new Loading({
