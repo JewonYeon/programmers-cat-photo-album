@@ -19,6 +19,29 @@ export class App {
     this.breadcrumb = new Breadcrumb({
       $app,
       initialState: [],
+      onClick: (index) => {
+        // root를 클릭할 경우
+        if (index === null) {
+          this.setState({
+            ...this.state,
+            depth: [],
+            nodes: cache.root,
+            isRoot: true,
+          });
+          return;
+        }
+        // 현재 위치일 경우 무시
+        if (index === this.state.depth.length - 1) {
+          return;
+        }
+
+        const moveDepth = this.state.depth.slice(0, index + 1);
+        this.setState({
+          ...this.state,
+          depth: moveDepth,
+          nodes: cache[moveDepth[moveDepth.length - 1].id],
+        });
+      },
     });
 
     this.nodes = new Nodes({
