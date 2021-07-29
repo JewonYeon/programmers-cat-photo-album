@@ -4,6 +4,8 @@ import { Nodes } from "./components/Nodes.js";
 import { api } from "./api.js";
 import { Loading } from "./components/Loading.js";
 
+const cache = {};
+
 export class App {
   constructor($app) {
     this.state = {
@@ -31,15 +33,28 @@ export class App {
             isLoading: true,
           });
           if (node.type === "DIRECTORY") {
-            // DIRECTORY인 경우 처리
-            // 여기에서 Breadcrumb 관련 처리를 하게 되면, Nodes에서는 Breadcrumb를 몰라도 됨
-            const nextNodes = await api.directory(node.id);
-            this.setState({
-              ...this.state,
-              depth: [...this.state.depth, node],
-              nodes: nextNodes,
-              isRoot: false,
-            });
+            // 캐시 유무 확인
+            if (cache[node.id]) {
+              this.setState({
+                ...this.state,
+                depth: [...this.state.depth, node],
+                nodes: cache[node.id],
+                isRoot: false,
+              });
+            } else {
+              // DIRECTORY인 경우 처리
+              // 여기에서 Breadcrumb 관련 처리를 하게 되면, Nodes에서는 Breadcrumb를 몰라도 됨
+              const nextNodes = await api.directory(node.id);
+              this.setState({
+                ...this.state,
+                depth: [...this.state.depth, node],
+                nodes: nextNodes,
+                isRoot: false,
+              });
+
+              // 캐시 업데이트
+              cache[node.id] = nextNodes;
+            }
           } else if (node.type === "FILE") {
             // FILE인 경우 처리
             this.setState({
@@ -59,6 +74,11 @@ export class App {
       },
       onBackClick: async () => {
         try {
+          this.setState({
+            ...this.state,
+            isLoading: true,
+          });
+
           // 이전 state를 복사하여 처리
           const nextState = { ...this.state };
 
@@ -71,23 +91,35 @@ export class App {
 
           // root로 온 경우이므로 root 처리
           if (prevNodeId === null) {
-            const rootNodes = await api.root();
+            // const rootNodes = await api.root(); => cache.root로 대체
             this.setState({
               ...nextState,
               isRoot: true,
-              nodes: rootNodes,
+              nodes: cache.root,
             });
           } else {
-            const prevNodes = await api.directory(prevNodeId);
+            // const prevNodes = await api.directory(prevNodeId);
+            // this.setState({
+            //   ...nextState,
+            //   isRoot: false,
+            //   nodes: prevNodes,
+            // });
 
+            // 현재 코드에선 불러오는 모든 데이터를 캐시에 담기때문에 이전으로 돌아갈 경우 이전 데이터가 이미 캐시에 있음
             this.setState({
               ...nextState,
               isRoot: false,
-              nodes: prevNodes,
+              nodes: cache[prevNodes],
             });
           }
         } catch (e) {
           // 에러처리
+          throw new Error(e.message);
+        } finally {
+          this.setState({
+            ...this.state,
+            isLoading: false,
+          });
         }
       },
     });
@@ -130,6 +162,9 @@ export class App {
         isRoot: true,
         nodes: rootNodes,
       });
+
+      // root 파일 캐시 저장
+      cache.root = rootNodes;
     } catch (e) {
       // 에러 처리
     } finally {

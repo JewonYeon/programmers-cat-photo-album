@@ -27,7 +27,6 @@ export class Nodes {
   }
 
   render() {
-    console.log("Nodes 상태", this.state);
     if (this.state.nodes) {
       // 전달받은 노드들의 타입으로 파일 or 디렉토리를 파악 후 맞는 이미지를 넣어준다.
       const nodeTemplate = this.state.nodes
